@@ -70,7 +70,7 @@ Tools:
 The following have tools to help you start a DAO without having to deploy contracts yourself.
 
 - [DAO Stack](https://alchemy.daostack.io/daos/create)
-- [Aargon](https://www.youtube.com/watch?v=VIyG-PYJv9E)
+- [Argon](https://www.youtube.com/watch?v=VIyG-PYJv9E)
   - lol, just kidding. [Here is the real link.](https://aragon.org/)
 - [Colony](https://colony.io/)
 - [DAOHaus](https://app.daohaus.club/summon)
