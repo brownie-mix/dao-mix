@@ -1,0 +1,11 @@
+__pycache__
+.history
+.hypothesis/
+build/
+reports/
+.patrick
+.env
+.patrick 
+.article.md
+node_modules
+.vscode
