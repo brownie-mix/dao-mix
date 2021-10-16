@@ -218,18 +218,4 @@ Patrick Collins - [@patrickalphac](https://twitter.com/patrickalphac)
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-<!-- [contributors-url]: https://github.com/brownie-mix/dao-mix/graphs/contributors
-[forks-url]: https://github.com/brownie-mix/dao-mix/network/members
-[stars-url]: https://github.com/brownie-mix/dao-mix/stargazers
-[issues-url]: https://github.com/brownie-mix/dao-mix/issues -->
-
-DAO no code solutions:
-- [DAO Stack](https://alchemy.daostack.io/daos/create)
-- [Aragon](https://aragon.org/) <!-- https://www.youtube.com/watch?v=VIyG-PYJv9E -->
-- [Colony](https://colony.io/)
-- [DAOHaus](https://app.daohaus.club/summon)
-
 You can check out the [openzeppelin javascript tests](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e6f26b46fc8015f1b9b09bb85297464069302125/test/governance/extensions/GovernorTimelockControl.test) for a full suite of an example of what is possible. 
