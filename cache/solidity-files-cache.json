@@ -1268,8 +1268,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/GovernanceToken.sol": {
-      "lastModificationDate": 1647330851240,
-      "contentHash": "2cb2a26fdcc1f1a85ef3a5923c55c318",
+      "lastModificationDate": 1647452167991,
+      "contentHash": "6c565d5eae8d5854a5ff7b3a15bb190c",
       "sourceName": "contracts/GovernanceToken.sol",
       "solcConfig": {
         "version": "0.8.7",

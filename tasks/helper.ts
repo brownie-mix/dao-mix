@@ -5,7 +5,18 @@ import {
   GovernanceToken,
   GovernorContract,
 } from '../typechain';
-import { printBlock, printContract } from './utils';
+import { printBlock } from './utils';
+
+export enum ProposalState {
+  Pending = 0,
+  Active = 1,
+  Canceled = 2,
+  Defeated = 3,
+  Succeeded = 4,
+  Queued = 5,
+  Expired = 6,
+  Executed = 7,
+}
 
 const deployGovernanceToken = async (
   ethers: any,
@@ -17,6 +28,8 @@ const deployGovernanceToken = async (
   );
   const contract = await GovernanceTokenFactory.connect(signer).deploy();
   console.log(`\tdeployed at ${contract.address}`);
+  const totalSupply = await contract.totalSupply();
+  console.log(`\tTotal supply : ${ethers.utils.formatUnits(totalSupply)}`);
   printBlock(await ethers.provider.getBlock('latest'));
   return contract;
 };
@@ -113,6 +126,9 @@ const propose = async (
     receipt,
   );
   console.log(`\tProposal id ${proposalId}`);
+  const state = await governorContract.state(proposalId);
+  console.log(`\tProposal state: ${ProposalState[state]}`);
+  printBlock(await ethers.provider.getBlock('latest'));
   return proposalId;
 };
 export { propose };
@@ -137,28 +153,44 @@ const getProposalIdFromProposalTransactionReceipt = async (
   return null;
 };
 
+const printVoteCast = async (ethers: any, receipt: any) => {
+  for (let i = 0; i < receipt.events.length; i++) {
+    let e = receipt.events[i];
+    if (e.event === 'VoteCast') {
+      console.log(
+        `\tEvent VoteCast Voter: ${e.args.voter} Support: ${e.args.support} Weight: ${e.args.weight} Reason: ${e.args.reason}`,
+      );
+    }
+  }
+};
+
+export enum VOTE {
+  AGAINST = 0,
+  FOR = 1,
+  ABSTAIN = 2,
+}
+
 const vote = async (
   network: any,
   ethers: any,
   governorContract: GovernorContract,
   voter: SignerWithAddress,
   proposalId: string,
-  vote: number,
+  vote: VOTE,
+  reason: string,
 ) => {
   // 0 = Against, 1 = For, 2 = Abstain for this example
   console.log(`\nvoting yes on ${proposalId}...`);
   advanceBlocks(network, 1);
+  printBlock(await ethers.provider.getBlock('latest'));
 
   const voteTx = await governorContract
     .connect(voter)
-    .castVoteWithReason(
-      ethers.BigNumber.from(proposalId),
-      vote,
-      'Reason cha cha',
-    );
+    .castVoteWithReason(ethers.BigNumber.from(proposalId), vote, reason);
 
   console.log(`\tWait 1 block...`);
   const receipt = await voteTx.wait(1);
-  console.log(receipt);
+  printVoteCast(ethers, receipt);
+  printBlock(await ethers.provider.getBlock('latest'));
 };
 export { vote };
