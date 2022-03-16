@@ -9,3 +9,5 @@ reports/
 .article.md
 node_modules
 .vscode
+typechain
+artifacts
