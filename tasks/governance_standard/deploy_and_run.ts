@@ -12,7 +12,7 @@ import {
   deployBox,
   deployGovernanceTimeLock,
   deployGovernorContract,
-  grantRoles,
+  grantAndRevokeRoles,
   propose,
   advanceBlocks,
   vote,
@@ -59,14 +59,11 @@ task('deploy_and_run', 'Deploy and run DOA').setAction(
 
     // delegate tokens to voters...
     console.log(`\ndelegating tokens to voters...`);
-    let index = 0;
-    while (index < totalVoters) {
-      console.log(`\tVoter ${index}`);
-      await governanceToken.connect(admin).delegate(voters[index].address);
-      printBlock(await ethers.provider.getBlock('latest'));
-      index++;
+    let voterIndex = 0;
+    while (voterIndex < totalVoters) {
+      await governanceToken.connect(admin).delegate(voters[voterIndex].address);
+      voterIndex++;
     }
-
     const ownerBal = ethers.utils.formatUnits(
       await governanceToken.balanceOf(admin.address),
     );
@@ -93,8 +90,13 @@ task('deploy_and_run', 'Deploy and run DOA').setAction(
       VOTING_DELAY,
     );
 
-    // granting roles
-    await grantRoles(ethers, admin, governanceTimeLock, governorContract);
+    // granting and revoking roles
+    await grantAndRevokeRoles(
+      ethers,
+      admin,
+      governanceTimeLock,
+      governorContract,
+    );
 
     // Propose
     const proposalId = await propose(
@@ -108,38 +110,36 @@ task('deploy_and_run', 'Deploy and run DOA').setAction(
 
     // Let's vote!
 
-    index = 0;
+    voterIndex = 0;
 
     // losing party...
-    while (index < totalVoters / 2) {
-      console.log(`\nVoter ${index}`);
+    while (voterIndex < totalVoters / 2) {
       // voter 0
       await vote(
         network,
         ethers,
         governorContract,
-        voters[index],
+        voters[voterIndex],
         proposalId,
         VOTE.AGAINST,
         "I'm not a perfect person, there is many I wish I didn't do",
       );
-      index++;
+      voterIndex++;
     }
 
     // winning party...
-    while (index < totalVoters) {
-      console.log(`\nVoter ${index}`);
+    while (voterIndex < totalVoters) {
       // voter 0
       await vote(
         network,
         ethers,
         governorContract,
-        voters[index],
+        voters[voterIndex],
         proposalId,
-        VOTE.AGAINST,
+        VOTE.FOR,
         "I'm not a perfect person, there is many I wish I didn't do",
       );
-      index++;
+      voterIndex++;
     }
 
     // Make voting period over

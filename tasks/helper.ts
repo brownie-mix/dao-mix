@@ -57,7 +57,7 @@ const deployGovernanceTimeLock = async (
 };
 export { deployGovernanceTimeLock };
 
-const grantRoles = async (
+const grantAndRevokeRoles = async (
   ethers: any,
   timeLockOwner: SignerWithAddress,
   timeLockContract: GovernanceTimeLock,
@@ -86,7 +86,7 @@ const grantRoles = async (
 
   printBlock(await ethers.provider.getBlock('latest'));
 };
-export { grantRoles };
+export { grantAndRevokeRoles };
 
 const deployGovernorContract = async (
   ethers: any,
@@ -122,6 +122,8 @@ const deployBox = async (
   const BoxFactory = await ethers.getContractFactory('Box');
   const contract = await BoxFactory.connect(owner).deploy();
   console.log(`\tdeployed at ${contract.address}`);
+  const storeValue = await contract.retrieve();
+  console.log(`\tInitial store value ${storeValue}`);
   printBlock(await ethers.provider.getBlock('latest'));
   return contract;
 };
@@ -262,6 +264,7 @@ const queueAndExecute = async (
   await exeTx.wait(1);
   printBlock(await ethers.provider.getBlock('latest'));
 
-  console.log(await boxContract.retrieve());
+  const newValue = await boxContract.retrieve();
+  console.log(`\tUpdated/new store value ${newValue}`);
 };
 export { queueAndExecute };
