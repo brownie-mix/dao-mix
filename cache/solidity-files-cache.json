@@ -1190,8 +1190,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/governance_standard/GovernorContract.sol": {
-      "lastModificationDate": 1647404089429,
-      "contentHash": "6aed89760bfc2ff87f42cb7e4ec43de5",
+      "lastModificationDate": 1647487747708,
+      "contentHash": "f418b9cf35aac4ae25e062a60eae99a4",
       "sourceName": "contracts/governance_standard/GovernorContract.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -1221,7 +1221,8 @@
         "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol",
         "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol",
         "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol",
-        "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol"
+        "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol",
+        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol"
       ],
       "versionPragmas": [
         "^0.8.2"
@@ -1268,8 +1269,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/GovernanceToken.sol": {
-      "lastModificationDate": 1647452167991,
-      "contentHash": "6c565d5eae8d5854a5ff7b3a15bb190c",
+      "lastModificationDate": 1647489740371,
+      "contentHash": "182c824d7a9c15f003a1027915790eab",
       "sourceName": "contracts/GovernanceToken.sol",
       "solcConfig": {
         "version": "0.8.7",

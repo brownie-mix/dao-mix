@@ -175,7 +175,6 @@ def move_blocks(amount):
         get_account().transfer(get_account(), "0 ether")
     print(chain.height)
 
-
 def main():
     deploy_governor()
     deploy_box_to_be_governed()
@@ -185,13 +184,13 @@ def main():
     if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         move_blocks(1)
     vote(proposal_id, 1)
-    # # Once the voting period is over,
-    # # if quorum was reached (enough voting power participated)
-    # # and the majority voted in favor, the proposal is
-    # # considered successful and can proceed to be executed.
-    # # To execute we must first `queue` it to pass the timelock
-    # if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
-    #     move_blocks(VOTING_PERIOD)
-    # # States: {Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed }
-    # print(f" This proposal is currently {GovernorContract[-1].state(proposal_id)}")
-    # queue_and_execute(NEW_STORE_VALUE)
+    # Once the voting period is over,
+    # if quorum was reached (enough voting power participated)
+    # and the majority voted in favor, the proposal is
+    # considered successful and can proceed to be executed.
+    # To execute we must first `queue` it to pass the timelock
+    if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        move_blocks(VOTING_PERIOD)
+    # States: {Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed }
+    print(f" This proposal is currently {GovernorContract[-1].state(proposal_id)}")
+    queue_and_execute(NEW_STORE_VALUE)

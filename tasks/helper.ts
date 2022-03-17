@@ -52,9 +52,41 @@ const deployGovernanceTimeLock = async (
 
   console.log(`\tdeployed at ${contract.address}`);
   printBlock(await ethers.provider.getBlock('latest'));
+
   return contract;
 };
 export { deployGovernanceTimeLock };
+
+const grantRoles = async (
+  ethers: any,
+  timeLockOwner: SignerWithAddress,
+  timeLockContract: GovernanceTimeLock,
+  governorContract: GovernorContract,
+) => {
+  console.log(`\ngranting proposal, executor roles...`);
+  printBlock(await ethers.provider.getBlock('latest'));
+
+  // Now, we set the roles...
+  // Multicall would be great here ;)
+  const proposalRole = await timeLockContract.PROPOSER_ROLE();
+  const executorRole = await timeLockContract.EXECUTOR_ROLE();
+  const timeLockAdminRole = await timeLockContract.TIMELOCK_ADMIN_ROLE();
+
+  await timeLockContract
+    .connect(timeLockOwner)
+    .grantRole(proposalRole, governorContract.address);
+  await timeLockContract
+    .connect(timeLockOwner)
+    .grantRole(executorRole, `0x0000000000000000000000000000000000000000`);
+
+  const tx = await timeLockContract
+    .connect(timeLockOwner)
+    .revokeRole(timeLockAdminRole, timeLockOwner.address);
+  await tx.wait(1);
+
+  printBlock(await ethers.provider.getBlock('latest'));
+};
+export { grantRoles };
 
 const deployGovernorContract = async (
   ethers: any,
@@ -109,6 +141,7 @@ const propose = async (
   console.log(`\nproposing...`);
 
   printBlock(await ethers.provider.getBlock('latest'));
+
   const proposeTx = await governorContract.propose(
     [boxContract.address],
     [0],
@@ -153,7 +186,7 @@ const getProposalIdFromProposalTransactionReceipt = async (
   return null;
 };
 
-const printVoteCast = async (ethers: any, receipt: any) => {
+const printVoteCast = async (receipt: any) => {
   for (let i = 0; i < receipt.events.length; i++) {
     let e = receipt.events[i];
     if (e.event === 'VoteCast') {
@@ -170,6 +203,7 @@ export enum VOTE {
   ABSTAIN = 2,
 }
 
+// cast a vote
 const vote = async (
   network: any,
   ethers: any,
@@ -180,7 +214,7 @@ const vote = async (
   reason: string,
 ) => {
   // 0 = Against, 1 = For, 2 = Abstain for this example
-  console.log(`\nvoting yes on ${proposalId}...`);
+  console.log(`\ncast vote ${VOTE[vote]} on ${proposalId}...`);
   advanceBlocks(network, 1);
   printBlock(await ethers.provider.getBlock('latest'));
 
@@ -190,7 +224,44 @@ const vote = async (
 
   console.log(`\tWait 1 block...`);
   const receipt = await voteTx.wait(1);
-  printVoteCast(ethers, receipt);
+  printVoteCast(receipt);
   printBlock(await ethers.provider.getBlock('latest'));
 };
 export { vote };
+
+const queueAndExecute = async (
+  ethers: any,
+  governorContract: GovernorContract,
+  boxContract: Box,
+  store_value: number,
+  proposalDesc: string,
+) => {
+  console.log(`\nqueing...`);
+  printBlock(await ethers.provider.getBlock('latest'));
+
+  const transferCalldata = boxContract.interface.encodeFunctionData('store', [
+    store_value,
+  ]);
+  const descriptionHash = ethers.utils.id(proposalDesc);
+  const queueTx = await governorContract.queue(
+    [boxContract.address],
+    [0],
+    [transferCalldata],
+    descriptionHash,
+  );
+  await queueTx.wait(1);
+  printBlock(await ethers.provider.getBlock('latest'));
+
+  console.log(`\nexecuting...`);
+  const exeTx = await governorContract.execute(
+    [boxContract.address],
+    [0],
+    [transferCalldata],
+    descriptionHash,
+  );
+  await exeTx.wait(1);
+  printBlock(await ethers.provider.getBlock('latest'));
+
+  console.log(await boxContract.retrieve());
+};
+export { queueAndExecute };
