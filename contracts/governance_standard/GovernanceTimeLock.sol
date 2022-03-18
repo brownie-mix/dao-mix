@@ -13,20 +13,20 @@ contract GovernanceTimeLock is TimelockController {
     address[] memory executors
   ) TimelockController(minDelay, proposers, executors) {}
 
-  function getDataGrantProposerRole(address account)
+  function encodeGrantProposerRole(address account)
     external
     view
     returns (bytes memory)
   {
     return
-      abi.encodeWithSignature(
-        'grantRole(bytes32,address)',
+      abi.encodeWithSelector(
+        this.grantRole.selector,
         this.PROPOSER_ROLE(),
         account
       );
   }
 
-  function getDataGrantExecutorRole(address account)
+  function encodeGrantExecutorRole(address account)
     external
     view
     returns (bytes memory)
@@ -39,7 +39,7 @@ contract GovernanceTimeLock is TimelockController {
       );
   }
 
-  function getDataRevokeTimeLockRole(address account)
+  function encodeRevokeTimeLockRole(address account)
     external
     view
     returns (bytes memory)

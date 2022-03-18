@@ -112,7 +112,7 @@ task('deploy_and_run', 'Deploy and run DOA').setAction(
 
     voterIndex = 0;
 
-    // losing party...
+    // Losing party...
     while (voterIndex < totalVoters / 2) {
       // voter 0
       await vote(
@@ -127,9 +127,8 @@ task('deploy_and_run', 'Deploy and run DOA').setAction(
       voterIndex++;
     }
 
-    // winning party...
+    // Winning party...
     while (voterIndex < totalVoters) {
-      // voter 0
       await vote(
         network,
         ethers,

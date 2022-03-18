@@ -27,11 +27,11 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
     "PROPOSER_ROLE()": FunctionFragment;
     "TIMELOCK_ADMIN_ROLE()": FunctionFragment;
     "cancel(bytes32)": FunctionFragment;
+    "encodeGrantExecutorRole(address)": FunctionFragment;
+    "encodeGrantProposerRole(address)": FunctionFragment;
+    "encodeRevokeTimeLockRole(address)": FunctionFragment;
     "execute(address,uint256,bytes,bytes32,bytes32)": FunctionFragment;
     "executeBatch(address[],uint256[],bytes[],bytes32,bytes32)": FunctionFragment;
-    "getDataGrantExecutorRole(address)": FunctionFragment;
-    "getDataGrantProposerRole(address)": FunctionFragment;
-    "getDataRevokeTimeLockRole(address)": FunctionFragment;
     "getMinDelay()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getTimestamp(bytes32)": FunctionFragment;
@@ -69,24 +69,24 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "cancel", values: [BytesLike]): string;
   encodeFunctionData(
+    functionFragment: "encodeGrantExecutorRole",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "encodeGrantProposerRole",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "encodeRevokeTimeLockRole",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "execute",
     values: [string, BigNumberish, BytesLike, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "executeBatch",
     values: [string[], BigNumberish[], BytesLike[], BytesLike, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDataGrantExecutorRole",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDataGrantProposerRole",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDataRevokeTimeLockRole",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getMinDelay",
@@ -188,21 +188,21 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "cancel", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "encodeGrantExecutorRole",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "encodeGrantProposerRole",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "encodeRevokeTimeLockRole",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "executeBatch",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDataGrantExecutorRole",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDataGrantProposerRole",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDataRevokeTimeLockRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -382,6 +382,21 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    encodeGrantExecutorRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    encodeGrantProposerRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    encodeRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     execute(
       target: string,
       value: BigNumberish,
@@ -399,21 +414,6 @@ export class GovernanceTimeLock extends BaseContract {
       salt: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    getDataGrantExecutorRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    getDataGrantProposerRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    getDataRevokeTimeLockRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
 
     getMinDelay(
       overrides?: CallOverrides
@@ -532,6 +532,21 @@ export class GovernanceTimeLock extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  encodeGrantExecutorRole(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  encodeGrantProposerRole(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  encodeRevokeTimeLockRole(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   execute(
     target: string,
     value: BigNumberish,
@@ -549,21 +564,6 @@ export class GovernanceTimeLock extends BaseContract {
     salt: BytesLike,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  getDataGrantExecutorRole(
-    account: string,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  getDataGrantProposerRole(
-    account: string,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  getDataRevokeTimeLockRole(
-    account: string,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -665,6 +665,21 @@ export class GovernanceTimeLock extends BaseContract {
 
     cancel(id: BytesLike, overrides?: CallOverrides): Promise<void>;
 
+    encodeGrantExecutorRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    encodeGrantProposerRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    encodeRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     execute(
       target: string,
       value: BigNumberish,
@@ -682,21 +697,6 @@ export class GovernanceTimeLock extends BaseContract {
       salt: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    getDataGrantExecutorRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    getDataGrantProposerRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    getDataRevokeTimeLockRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -961,6 +961,21 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    encodeGrantExecutorRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    encodeGrantProposerRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    encodeRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     execute(
       target: string,
       value: BigNumberish,
@@ -977,21 +992,6 @@ export class GovernanceTimeLock extends BaseContract {
       predecessor: BytesLike,
       salt: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    getDataGrantExecutorRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDataGrantProposerRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDataRevokeTimeLockRole(
-      account: string,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1111,6 +1111,21 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    encodeGrantExecutorRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    encodeGrantProposerRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    encodeRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     execute(
       target: string,
       value: BigNumberish,
@@ -1127,21 +1142,6 @@ export class GovernanceTimeLock extends BaseContract {
       predecessor: BytesLike,
       salt: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getDataGrantExecutorRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDataGrantProposerRole(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDataRevokeTimeLockRole(
-      account: string,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getMinDelay(overrides?: CallOverrides): Promise<PopulatedTransaction>;

@@ -1306,8 +1306,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/governance_standard/GovernanceTimeLock.sol": {
-      "lastModificationDate": 1647602097762,
-      "contentHash": "380d5569dc2c43a43ceb652d5fcadda1",
+      "lastModificationDate": 1647621823985,
+      "contentHash": "9e7aa8d2f1b0197cc5bc821bce6b1d40",
       "sourceName": "contracts/governance_standard/GovernanceTimeLock.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -1343,8 +1343,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/optional/RoleMultiCall.sol": {
-      "lastModificationDate": 1647602391725,
-      "contentHash": "155df9a6e314628264e8bf26112b92b6",
+      "lastModificationDate": 1647621048737,
+      "contentHash": "c4f4126fcb17ee0a0a154d6c91e90cf3",
       "sourceName": "contracts/optional/RoleMultiCall.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -1370,7 +1370,8 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol"
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "../governance_standard/GovernanceTimeLock.sol"
       ],
       "versionPragmas": [
         "^0.8.2"

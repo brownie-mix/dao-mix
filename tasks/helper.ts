@@ -75,9 +75,9 @@ const grantAndRevokeRoles = async (
     roleMultiCall.address,
   );
   const encodedFunctions = [
-    await timeLockContract.getDataGrantProposerRole(governorContract.address),
-    await timeLockContract.getDataGrantExecutorRole(governorContract.address),
-    await timeLockContract.getDataRevokeTimeLockRole(timeLockContract.address),
+    await timeLockContract.encodeGrantProposerRole(governorContract.address),
+    await timeLockContract.encodeGrantExecutorRole(governorContract.address),
+    await timeLockContract.encodeRevokeTimeLockRole(timeLockContract.address),
   ];
   await roleMultiCall.multiCall(timeLockContract.address, encodedFunctions);
   printBlock(await ethers.provider.getBlock('latest'));
