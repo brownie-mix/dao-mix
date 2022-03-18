@@ -27,6 +27,7 @@ export type { GovernanceTimeLock } from "./GovernanceTimeLock";
 export type { GovernorContract } from "./GovernorContract";
 export type { GovernanceToken } from "./GovernanceToken";
 export type { MyToken } from "./MyToken";
+export type { RoleMultiCall } from "./RoleMultiCall";
 
 export { AccessControl__factory } from "./factories/AccessControl__factory";
 export { IAccessControl__factory } from "./factories/IAccessControl__factory";
@@ -54,3 +55,4 @@ export { GovernanceTimeLock__factory } from "./factories/GovernanceTimeLock__fac
 export { GovernorContract__factory } from "./factories/GovernorContract__factory";
 export { GovernanceToken__factory } from "./factories/GovernanceToken__factory";
 export { MyToken__factory } from "./factories/MyToken__factory";
+export { RoleMultiCall__factory } from "./factories/RoleMultiCall__factory";

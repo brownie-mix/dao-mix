@@ -116,6 +116,10 @@ declare module "hardhat/types/runtime" {
       name: "MyToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MyToken__factory>;
+    getContractFactory(
+      name: "RoleMultiCall",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RoleMultiCall__factory>;
 
     getContractAt(
       name: "AccessControl",
@@ -247,6 +251,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.MyToken>;
+    getContractAt(
+      name: "RoleMultiCall",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.RoleMultiCall>;
 
     // default types
     getContractFactory(

@@ -1269,8 +1269,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/GovernanceToken.sol": {
-      "lastModificationDate": 1647489740371,
-      "contentHash": "182c824d7a9c15f003a1027915790eab",
+      "lastModificationDate": 1647495301051,
+      "contentHash": "71e09d95fd0bcb001b1ea6cc749343fb",
       "sourceName": "contracts/GovernanceToken.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -1306,8 +1306,8 @@
       ]
     },
     "/Users/azlan/projects/hardhats/dao-mix/contracts/governance_standard/GovernanceTimeLock.sol": {
-      "lastModificationDate": 1647330851240,
-      "contentHash": "532fa2e9cb8c709117a0bd2129173752",
+      "lastModificationDate": 1647590287050,
+      "contentHash": "1c5d8adffab9ec796aa08b65d6faca6b",
       "sourceName": "contracts/governance_standard/GovernanceTimeLock.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -1336,10 +1336,80 @@
         "@openzeppelin/contracts/governance/TimelockController.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "GovernanceTimeLock"
+      ]
+    },
+    "/Users/azlan/projects/hardhats/dao-mix/contracts/optional/RoleMultiCall.sol": {
+      "lastModificationDate": 1647590009516,
+      "contentHash": "b722634100b7935120f28443e76feb78",
+      "sourceName": "contracts/optional/RoleMultiCall.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.2"
+      ],
+      "artifacts": [
+        "RoleMultiCall"
+      ]
+    },
+    "/Users/azlan/projects/hardhats/dao-mix/node_modules/hardhat/console.sol": {
+      "lastModificationDate": 1647331238121,
+      "contentHash": "cc4777addd464ea56fa35b1c45df0591",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
       ]
     }
   }
