@@ -69,39 +69,17 @@ const grantAndRevokeRoles = async (
   // Now, we set the roles...
   // Do in Multicall fashion...yeeha!
   const RoleMultiCall = await ethers.getContractFactory('RoleMultiCall');
-  const roleMultiCall = await RoleMultiCall.connect(timeLockOwner).deploy();
-
-  const targets = [timeLockContract.address, timeLockContract.address];
-
+  const roleMultiCall = await RoleMultiCall.deploy();
+  await timeLockContract.grantRole(
+    await timeLockContract.TIMELOCK_ADMIN_ROLE(),
+    roleMultiCall.address,
+  );
   const encodedFunctions = [
     await timeLockContract.getDataGrantProposerRole(governorContract.address),
     await timeLockContract.getDataGrantExecutorRole(governorContract.address),
+    await timeLockContract.getDataRevokeTimeLockRole(timeLockContract.address),
   ];
-
-  const multiCallResult = await roleMultiCall.multiCall(
-    targets,
-    encodedFunctions,
-  );
-  console.log(`\tRoleMultiCall result: ${multiCallResult}`);
-
-  // Now, we set the roles...
-  // Multicall would be great here ;)
-  // const proposalRole = await timeLockContract.PROPOSER_ROLE();
-  // const executorRole = await timeLockContract.EXECUTOR_ROLE();
-  // const timeLockAdminRole = await timeLockContract.TIMELOCK_ADMIN_ROLE();
-
-  // await timeLockContract
-  //   .connect(timeLockOwner)
-  //   .grantRole(proposalRole, governorContract.address);
-  // await timeLockContract
-  //   .connect(timeLockOwner)
-  //   .grantRole(executorRole, `0x0000000000000000000000000000000000000000`);
-
-  // const tx = await timeLockContract
-  //   .connect(timeLockOwner)
-  //   .revokeRole(timeLockAdminRole, timeLockOwner.address);
-  // await tx.wait(1);
-
+  await roleMultiCall.multiCall(timeLockContract.address, encodedFunctions);
   printBlock(await ethers.provider.getBlock('latest'));
 };
 export { grantAndRevokeRoles };

@@ -31,7 +31,7 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
     "executeBatch(address[],uint256[],bytes[],bytes32,bytes32)": FunctionFragment;
     "getDataGrantExecutorRole(address)": FunctionFragment;
     "getDataGrantProposerRole(address)": FunctionFragment;
-    "getDataMinDelay()": FunctionFragment;
+    "getDataRevokeTimeLockRole(address)": FunctionFragment;
     "getMinDelay()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getTimestamp(bytes32)": FunctionFragment;
@@ -85,8 +85,8 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "getDataMinDelay",
-    values?: undefined
+    functionFragment: "getDataRevokeTimeLockRole",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getMinDelay",
@@ -202,7 +202,7 @@ interface GovernanceTimeLockInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getDataMinDelay",
+    functionFragment: "getDataRevokeTimeLockRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -410,7 +410,10 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getDataMinDelay(overrides?: CallOverrides): Promise<[string]>;
+    getDataRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     getMinDelay(
       overrides?: CallOverrides
@@ -557,7 +560,10 @@ export class GovernanceTimeLock extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getDataMinDelay(overrides?: CallOverrides): Promise<string>;
+  getDataRevokeTimeLockRole(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -687,7 +693,10 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getDataMinDelay(overrides?: CallOverrides): Promise<string>;
+    getDataRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -980,7 +989,10 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getDataMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
+    getDataRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getMinDelay(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1127,7 +1139,10 @@ export class GovernanceTimeLock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getDataMinDelay(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getDataRevokeTimeLockRole(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     getMinDelay(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
