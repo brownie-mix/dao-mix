@@ -1,266 +1,272 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  Box,
-  GovernanceTimeLock,
-  GovernanceToken,
-  GovernorContract,
+    Box,
+    GovernanceTimeLock,
+    GovernanceToken,
+    GovernorContract,
 } from '../typechain';
 import { printBlock } from './utils';
 
 export enum ProposalState {
-  Pending = 0,
-  Active = 1,
-  Canceled = 2,
-  Defeated = 3,
-  Succeeded = 4,
-  Queued = 5,
-  Expired = 6,
-  Executed = 7,
+    Pending = 0,
+    Active = 1,
+    Canceled = 2,
+    Defeated = 3,
+    Succeeded = 4,
+    Queued = 5,
+    Expired = 6,
+    Executed = 7,
 }
 
 const deployGovernanceToken = async (
-  ethers: any,
-  signer: SignerWithAddress,
+    ethers: any,
+    signer: SignerWithAddress,
 ): Promise<GovernanceToken> => {
-  console.log('\ndeploying GovernanceToken...');
-  const GovernanceTokenFactory = await ethers.getContractFactory(
-    'GovernanceToken',
-  );
-  const contract = await GovernanceTokenFactory.connect(signer).deploy();
-  console.log(`\tdeployed at ${contract.address}`);
-  const totalSupply = await contract.totalSupply();
-  console.log(`\tTotal supply : ${ethers.utils.formatUnits(totalSupply)}`);
-  printBlock(await ethers.provider.getBlock('latest'));
-  return contract;
+    console.log('\ndeploying GovernanceToken...');
+    const GovernanceTokenFactory = await ethers.getContractFactory(
+        'GovernanceToken',
+    );
+    const contract = await GovernanceTokenFactory.connect(signer).deploy();
+    console.log(`\tdeployed at ${contract.address}`);
+    const totalSupply = await contract.totalSupply();
+    console.log(`\tTotal supply : ${ethers.utils.formatUnits(totalSupply)}`);
+    printBlock(await ethers.provider.getBlock('latest'));
+    return contract;
 };
 export { deployGovernanceToken };
 
 const deployGovernanceTimeLock = async (
-  ethers: any,
-  admin: SignerWithAddress,
-  minDelay: number,
+    ethers: any,
+    admin: SignerWithAddress,
+    minDelay: number,
 ): Promise<GovernanceTimeLock> => {
-  console.log(`\ndeploying GovernanceTimeLock...`);
-  const GovernanceTimeLockFactory = await ethers.getContractFactory(
-    'GovernanceTimeLock',
-  );
-  const contract = await GovernanceTimeLockFactory.connect(admin).deploy(
-    minDelay,
-    [],
-    [],
-  );
+    console.log(`\ndeploying GovernanceTimeLock...`);
+    const GovernanceTimeLockFactory = await ethers.getContractFactory(
+        'GovernanceTimeLock',
+    );
+    const contract = await GovernanceTimeLockFactory.connect(admin).deploy(
+        minDelay,
+        [],
+        [],
+    );
 
-  console.log(`\tdeployed at ${contract.address}`);
-  printBlock(await ethers.provider.getBlock('latest'));
+    console.log(`\tdeployed at ${contract.address}`);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  return contract;
+    return contract;
 };
 export { deployGovernanceTimeLock };
 
 const grantAndRevokeRoles = async (
-  ethers: any,
-  timeLockOwner: SignerWithAddress,
-  timeLockContract: GovernanceTimeLock,
-  governorContract: GovernorContract,
+    ethers: any,
+    timeLockOwner: SignerWithAddress,
+    timeLockContract: GovernanceTimeLock,
+    governorContract: GovernorContract,
 ) => {
-  console.log(`\ngranting proposal, executor roles...`);
-  printBlock(await ethers.provider.getBlock('latest'));
+    console.log(`\ngranting proposal, executor roles...`);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  // Now, we set the roles...
-  // Do in Multicall fashion...yeeha!
-  const RoleMultiCall = await ethers.getContractFactory('RoleMultiCall');
-  const roleMultiCall = await RoleMultiCall.deploy();
-  await timeLockContract.grantRole(
-    await timeLockContract.TIMELOCK_ADMIN_ROLE(),
-    roleMultiCall.address,
-  );
-  const encodedFunctions = [
-    await timeLockContract.encodeGrantProposerRole(governorContract.address),
-    await timeLockContract.encodeGrantExecutorRole(governorContract.address),
-    await timeLockContract.encodeRevokeTimeLockRole(timeLockContract.address),
-  ];
-  await roleMultiCall.multiCall(timeLockContract.address, encodedFunctions);
-  printBlock(await ethers.provider.getBlock('latest'));
+    // Now, we set the roles...
+    // Do in Multicall fashion...yeeha!
+    const RoleMultiCall = await ethers.getContractFactory('RoleMultiCall');
+    const roleMultiCall = await RoleMultiCall.deploy();
+    await timeLockContract.grantRole(
+        await timeLockContract.TIMELOCK_ADMIN_ROLE(),
+        roleMultiCall.address,
+    );
+    const encodedFunctions = [
+        await timeLockContract.encodeGrantProposerRole(
+            governorContract.address,
+        ),
+        await timeLockContract.encodeGrantExecutorRole(
+            governorContract.address,
+        ),
+        await timeLockContract.encodeRevokeTimeLockRole(
+            timeLockContract.address,
+        ),
+    ];
+    await roleMultiCall.multiCall(timeLockContract.address, encodedFunctions);
+    printBlock(await ethers.provider.getBlock('latest'));
 };
 export { grantAndRevokeRoles };
 
 const deployGovernorContract = async (
-  ethers: any,
-  admin: SignerWithAddress,
-  _tokenAddress: string,
-  _timeLockAddress: string,
-  _quorumPercentage: number,
-  _votingPeriod: number,
-  _votingDelay: number,
+    ethers: any,
+    admin: SignerWithAddress,
+    _tokenAddress: string,
+    _timeLockAddress: string,
+    _quorumPercentage: number,
+    _votingPeriod: number,
+    _votingDelay: number,
 ): Promise<GovernorContract> => {
-  console.log(`\ndeploying GovernorContract...`);
-  const GovernorContractFactory = await ethers.getContractFactory(
-    'GovernorContract',
-  );
-  const contract = await GovernorContractFactory.connect(admin).deploy(
-    _tokenAddress,
-    _timeLockAddress,
-    _quorumPercentage,
-    _votingPeriod,
-    _votingDelay,
-  );
-  console.log(`\tdeployed at ${contract.address}`);
-  printBlock(await ethers.provider.getBlock('latest'));
-  return contract;
+    console.log(`\ndeploying GovernorContract...`);
+    const GovernorContractFactory = await ethers.getContractFactory(
+        'GovernorContract',
+    );
+    const contract = await GovernorContractFactory.connect(admin).deploy(
+        _tokenAddress,
+        _timeLockAddress,
+        _quorumPercentage,
+        _votingPeriod,
+        _votingDelay,
+    );
+    console.log(`\tdeployed at ${contract.address}`);
+    printBlock(await ethers.provider.getBlock('latest'));
+    return contract;
 };
 export { deployGovernorContract };
 
 const deployBox = async (
-  ethers: any,
-  owner: SignerWithAddress,
+    ethers: any,
+    owner: SignerWithAddress,
 ): Promise<Box> => {
-  console.log(`\ndeploying Box...`);
-  const BoxFactory = await ethers.getContractFactory('Box');
-  const contract = await BoxFactory.connect(owner).deploy();
-  console.log(`\tdeployed at ${contract.address}`);
-  const storeValue = await contract.retrieve();
-  console.log(`\tInitial store value ${storeValue}`);
-  printBlock(await ethers.provider.getBlock('latest'));
-  return contract;
+    console.log(`\ndeploying Box...`);
+    const BoxFactory = await ethers.getContractFactory('Box');
+    const contract = await BoxFactory.connect(owner).deploy();
+    console.log(`\tdeployed at ${contract.address}`);
+    const storeValue = await contract.retrieve();
+    console.log(`\tInitial store value ${storeValue}`);
+    printBlock(await ethers.provider.getBlock('latest'));
+    return contract;
 };
 export { deployBox };
 
 const propose = async (
-  ethers: any,
-  network: any,
-  governorContract: GovernorContract,
-  boxContract: Box,
-  store_value: number,
-  proposalDescription: string,
+    ethers: any,
+    network: any,
+    governorContract: GovernorContract,
+    boxContract: Box,
+    store_value: number,
+    proposalDescription: string,
 ): Promise<string> => {
-  const transferCalldata = boxContract.interface.encodeFunctionData('store', [
-    store_value,
-  ]);
-  console.log(`\nproposing...`);
+    const transferCalldata = boxContract.interface.encodeFunctionData('store', [
+        store_value,
+    ]);
+    console.log(`\nproposing...`);
 
-  printBlock(await ethers.provider.getBlock('latest'));
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  const proposeTx = await governorContract.propose(
-    [boxContract.address],
-    [0],
-    [transferCalldata],
-    proposalDescription,
-  );
+    const proposeTx = await governorContract.propose(
+        [boxContract.address],
+        [0],
+        [transferCalldata],
+        proposalDescription,
+    );
 
-  await advanceBlocks(network, 1);
+    await advanceBlocks(network, 1);
 
-  console.log(`\tWait another 2 blocks...`);
-  const receipt = await proposeTx.wait(2);
-  printBlock(await ethers.provider.getBlock('latest'));
-  const proposalId = await getProposalIdFromProposalTransactionReceipt(
-    ethers,
-    receipt,
-  );
-  console.log(`\tProposal id ${proposalId}`);
-  const state = await governorContract.state(proposalId);
-  console.log(`\tProposal state: ${ProposalState[state]}`);
-  printBlock(await ethers.provider.getBlock('latest'));
-  return proposalId;
+    console.log(`\tWait another 2 blocks...`);
+    const receipt = await proposeTx.wait(2);
+    printBlock(await ethers.provider.getBlock('latest'));
+    const proposalId = await getProposalIdFromProposalTransactionReceipt(
+        ethers,
+        receipt,
+    );
+    console.log(`\tProposal id ${proposalId}`);
+    const state = await governorContract.state(proposalId);
+    console.log(`\tProposal state: ${ProposalState[state]}`);
+    printBlock(await ethers.provider.getBlock('latest'));
+    return proposalId;
 };
 export { propose };
 
 const advanceBlocks = async (network: any, blocks: number) => {
-  console.log(`\tadvancing ${blocks} blocks...`);
-  for (let i = 0; i <= blocks; i++) {
-    network.provider.send('evm_mine');
-  }
+    console.log(`\tadvancing ${blocks} blocks...`);
+    for (let i = 0; i <= blocks; i++) {
+        network.provider.send('evm_mine');
+    }
 };
 export { advanceBlocks };
 
 const getProposalIdFromProposalTransactionReceipt = async (
-  ethers: any,
-  receipt: any,
+    ethers: any,
+    receipt: any,
 ) => {
-  for (let i = 0; i < receipt.events.length; i++) {
-    let e = receipt.events[i];
-    if (e.event == 'ProposalCreated')
-      return ethers.BigNumber.from(e.args[0]).toString();
-  }
-  return null;
+    for (let i = 0; i < receipt.events.length; i++) {
+        let e = receipt.events[i];
+        if (e.event == 'ProposalCreated')
+            return ethers.BigNumber.from(e.args[0]).toString();
+    }
+    return null;
 };
 
 const printVoteCast = async (receipt: any) => {
-  for (let i = 0; i < receipt.events.length; i++) {
-    let e = receipt.events[i];
-    if (e.event === 'VoteCast') {
-      console.log(
-        `\tEvent VoteCast Voter: ${e.args.voter} Support: ${e.args.support} Weight: ${e.args.weight} Reason: ${e.args.reason}`,
-      );
+    for (let i = 0; i < receipt.events.length; i++) {
+        let e = receipt.events[i];
+        if (e.event === 'VoteCast') {
+            console.log(
+                `\tEvent VoteCast Voter: ${e.args.voter} Support: ${e.args.support} Weight: ${e.args.weight} Reason: ${e.args.reason}`,
+            );
+        }
     }
-  }
 };
 
 export enum VOTE {
-  AGAINST = 0,
-  FOR = 1,
-  ABSTAIN = 2,
+    AGAINST = 0,
+    FOR = 1,
+    ABSTAIN = 2,
 }
 
 // cast a vote
 const vote = async (
-  network: any,
-  ethers: any,
-  governorContract: GovernorContract,
-  voter: SignerWithAddress,
-  proposalId: string,
-  vote: VOTE,
-  reason: string,
+    network: any,
+    ethers: any,
+    governorContract: GovernorContract,
+    voter: SignerWithAddress,
+    proposalId: string,
+    vote: VOTE,
+    reason: string,
 ) => {
-  // 0 = Against, 1 = For, 2 = Abstain for this example
-  console.log(`\ncast vote ${VOTE[vote]} on ${proposalId}...`);
-  advanceBlocks(network, 1);
-  printBlock(await ethers.provider.getBlock('latest'));
+    // 0 = Against, 1 = For, 2 = Abstain for this example
+    console.log(`\ncast vote ${VOTE[vote]} on ${proposalId}...`);
+    advanceBlocks(network, 1);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  const voteTx = await governorContract
-    .connect(voter)
-    .castVoteWithReason(ethers.BigNumber.from(proposalId), vote, reason);
+    const voteTx = await governorContract
+        .connect(voter)
+        .castVoteWithReason(ethers.BigNumber.from(proposalId), vote, reason);
 
-  console.log(`\tWait 1 block...`);
-  const receipt = await voteTx.wait(1);
-  printVoteCast(receipt);
-  printBlock(await ethers.provider.getBlock('latest'));
+    console.log(`\tWait 1 block...`);
+    const receipt = await voteTx.wait(1);
+    printVoteCast(receipt);
+    printBlock(await ethers.provider.getBlock('latest'));
 };
 export { vote };
 
 const queueAndExecute = async (
-  ethers: any,
-  governorContract: GovernorContract,
-  boxContract: Box,
-  store_value: number,
-  proposalDesc: string,
+    ethers: any,
+    governorContract: GovernorContract,
+    boxContract: Box,
+    store_value: number,
+    proposalDesc: string,
 ) => {
-  console.log(`\nqueing...`);
-  printBlock(await ethers.provider.getBlock('latest'));
+    console.log(`\nqueing...`);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  const transferCalldata = boxContract.interface.encodeFunctionData('store', [
-    store_value,
-  ]);
-  const descriptionHash = ethers.utils.id(proposalDesc);
-  const queueTx = await governorContract.queue(
-    [boxContract.address],
-    [0],
-    [transferCalldata],
-    descriptionHash,
-  );
-  await queueTx.wait(1);
-  printBlock(await ethers.provider.getBlock('latest'));
+    const transferCalldata = boxContract.interface.encodeFunctionData('store', [
+        store_value,
+    ]);
+    const descriptionHash = ethers.utils.id(proposalDesc);
+    const queueTx = await governorContract.queue(
+        [boxContract.address],
+        [0],
+        [transferCalldata],
+        descriptionHash,
+    );
+    await queueTx.wait(1);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  console.log(`\nexecuting...`);
-  const exeTx = await governorContract.execute(
-    [boxContract.address],
-    [0],
-    [transferCalldata],
-    descriptionHash,
-  );
-  await exeTx.wait(1);
-  printBlock(await ethers.provider.getBlock('latest'));
+    console.log(`\nexecuting...`);
+    const exeTx = await governorContract.execute(
+        [boxContract.address],
+        [0],
+        [transferCalldata],
+        descriptionHash,
+    );
+    await exeTx.wait(1);
+    printBlock(await ethers.provider.getBlock('latest'));
 
-  const newValue = await boxContract.retrieve();
-  console.log(`\tUpdated/new store value ${newValue}`);
+    const newValue = await boxContract.retrieve();
+    console.log(`\tUpdated/new store value ${newValue}`);
 };
 export { queueAndExecute };

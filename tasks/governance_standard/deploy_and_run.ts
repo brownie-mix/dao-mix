@@ -2,23 +2,23 @@ import { task } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  GovernanceToken,
-  Box,
-  GovernanceTimeLock,
-  GovernorContract,
+    GovernanceToken,
+    Box,
+    GovernanceTimeLock,
+    GovernorContract,
 } from '../../typechain';
 import {
-  deployGovernanceToken,
-  deployBox,
-  deployGovernanceTimeLock,
-  deployGovernorContract,
-  grantAndRevokeRoles,
-  propose,
-  advanceBlocks,
-  vote,
-  VOTE,
-  ProposalState,
-  queueAndExecute,
+    deployGovernanceToken,
+    deployBox,
+    deployGovernanceTimeLock,
+    deployGovernorContract,
+    grantAndRevokeRoles,
+    propose,
+    advanceBlocks,
+    vote,
+    VOTE,
+    ProposalState,
+    queueAndExecute,
 } from '../helper';
 import { printBlock } from '../utils';
 
@@ -46,133 +46,135 @@ let boxOwner: SignerWithAddress;
 let voters: SignerWithAddress[];
 
 task('deploy_and_run', 'Deploy and run DOA').setAction(
-  async (taskArgs, hre) => {
-    const { network, ethers } = hre;
-    [admin, boxOwner] = await ethers.getSigners();
-    [...voters] = await ethers.getSigners();
+    async (taskArgs, hre) => {
+        const { network, ethers } = hre;
+        [admin, boxOwner] = await ethers.getSigners();
+        [...voters] = await ethers.getSigners();
 
-    const totalVoters = voters.length;
-    console.log(`Total voters ${totalVoters}`);
+        const totalVoters = voters.length;
+        console.log(`Total voters ${totalVoters}`);
 
-    // deploy token GovernanceToken
-    governanceToken = await deployGovernanceToken(ethers, admin);
+        // deploy token GovernanceToken
+        governanceToken = await deployGovernanceToken(ethers, admin);
 
-    // delegate tokens to voters...
-    console.log(`\ndelegating tokens to voters...`);
-    let voterIndex = 0;
-    while (voterIndex < totalVoters) {
-      await governanceToken.connect(admin).delegate(voters[voterIndex].address);
-      voterIndex++;
-    }
-    const ownerBal = ethers.utils.formatUnits(
-      await governanceToken.balanceOf(admin.address),
-    );
-    console.log(`\tOwner balance: ${ownerBal}`);
+        // delegate tokens to voters...
+        console.log(`\ndelegating tokens to voters...`);
+        let voterIndex = 0;
+        while (voterIndex < totalVoters) {
+            await governanceToken
+                .connect(admin)
+                .delegate(voters[voterIndex].address);
+            voterIndex++;
+        }
+        const ownerBal = ethers.utils.formatUnits(
+            await governanceToken.balanceOf(admin.address),
+        );
+        console.log(`\tOwner balance: ${ownerBal}`);
 
-    governanceTimeLock = await deployGovernanceTimeLock(
-      ethers,
-      admin,
-      MIN_DELAY,
-    );
+        governanceTimeLock = await deployGovernanceTimeLock(
+            ethers,
+            admin,
+            MIN_DELAY,
+        );
 
-    // deploy Box and transfer it ownership to timelock
-    boxContract = await deployBox(ethers, boxOwner);
-    await boxContract.transferOwnership(governanceTimeLock.address);
+        // deploy Box and transfer it ownership to timelock
+        boxContract = await deployBox(ethers, boxOwner);
+        await boxContract.transferOwnership(governanceTimeLock.address);
 
-    // deploy Governor
-    governorContract = await deployGovernorContract(
-      ethers,
-      admin,
-      governanceToken.address,
-      governanceTimeLock.address,
-      QUORUM_PERCENTAGE,
-      VOTING_PERIOD,
-      VOTING_DELAY,
-    );
+        // deploy Governor
+        governorContract = await deployGovernorContract(
+            ethers,
+            admin,
+            governanceToken.address,
+            governanceTimeLock.address,
+            QUORUM_PERCENTAGE,
+            VOTING_PERIOD,
+            VOTING_DELAY,
+        );
 
-    // granting and revoking roles
-    await grantAndRevokeRoles(
-      ethers,
-      admin,
-      governanceTimeLock,
-      governorContract,
-    );
+        // granting and revoking roles
+        await grantAndRevokeRoles(
+            ethers,
+            admin,
+            governanceTimeLock,
+            governorContract,
+        );
 
-    // Propose
-    const proposalId = await propose(
-      ethers,
-      network,
-      governorContract,
-      boxContract,
-      NEW_STORE_VALUE,
-      PROPOSAL_DESCRIPTION,
-    );
+        // Propose
+        const proposalId = await propose(
+            ethers,
+            network,
+            governorContract,
+            boxContract,
+            NEW_STORE_VALUE,
+            PROPOSAL_DESCRIPTION,
+        );
 
-    // Let's vote!
+        // Let's vote!
 
-    voterIndex = 0;
+        voterIndex = 0;
 
-    // Losing party...
-    while (voterIndex < totalVoters / 2) {
-      // voter 0
-      await vote(
-        network,
-        ethers,
-        governorContract,
-        voters[voterIndex],
-        proposalId,
-        VOTE.AGAINST,
-        "I'm not a perfect person, there is many I wish I didn't do",
-      );
-      voterIndex++;
-    }
+        // Losing party...
+        while (voterIndex < totalVoters / 2) {
+            // voter 0
+            await vote(
+                network,
+                ethers,
+                governorContract,
+                voters[voterIndex],
+                proposalId,
+                VOTE.AGAINST,
+                "I'm not a perfect person, there is many I wish I didn't do",
+            );
+            voterIndex++;
+        }
 
-    // Winning party...
-    while (voterIndex < totalVoters) {
-      await vote(
-        network,
-        ethers,
-        governorContract,
-        voters[voterIndex],
-        proposalId,
-        VOTE.FOR,
-        "I'm not a perfect person, there is many I wish I didn't do",
-      );
-      voterIndex++;
-    }
+        // Winning party...
+        while (voterIndex < totalVoters) {
+            await vote(
+                network,
+                ethers,
+                governorContract,
+                voters[voterIndex],
+                proposalId,
+                VOTE.FOR,
+                "I'm not a perfect person, there is many I wish I didn't do",
+            );
+            voterIndex++;
+        }
 
-    // Make voting period over
+        // Make voting period over
 
-    console.log(`\nEnding voting period...`);
-    const proposalDeadline = await governorContract.proposalDeadline(
-      proposalId,
-    );
-    console.log(
-      `\tProposalDeadline at block: ${ethers.BigNumber.from(
-        proposalDeadline,
-      ).toString()}`,
-    );
-    await advanceBlocks(network, VOTING_PERIOD);
-    printBlock(await ethers.provider.getBlock('latest'));
-    const state = await governorContract.state(proposalId);
-    console.log(`\tProposal state: ${ProposalState[state]}`);
+        console.log(`\nEnding voting period...`);
+        const proposalDeadline = await governorContract.proposalDeadline(
+            proposalId,
+        );
+        console.log(
+            `\tProposalDeadline at block: ${ethers.BigNumber.from(
+                proposalDeadline,
+            ).toString()}`,
+        );
+        await advanceBlocks(network, VOTING_PERIOD);
+        printBlock(await ethers.provider.getBlock('latest'));
+        const state = await governorContract.state(proposalId);
+        console.log(`\tProposal state: ${ProposalState[state]}`);
 
-    // Once the voting period is over,
-    // if quorum was reached (enough voting power participated)
-    // and the majority voted in favor, the proposal is
-    // considered successful and can proceed to be executed.
-    // To execute we must first `queue` it to pass the timelock
+        // Once the voting period is over,
+        // if quorum was reached (enough voting power participated)
+        // and the majority voted in favor, the proposal is
+        // considered successful and can proceed to be executed.
+        // To execute we must first `queue` it to pass the timelock
 
-    if (state === ProposalState.Succeeded) {
-      await queueAndExecute(
-        ethers,
-        governorContract,
-        boxContract,
-        NEW_STORE_VALUE,
-        PROPOSAL_DESCRIPTION,
-      );
-    }
-  },
+        if (state === ProposalState.Succeeded) {
+            await queueAndExecute(
+                ethers,
+                governorContract,
+                boxContract,
+                NEW_STORE_VALUE,
+                PROPOSAL_DESCRIPTION,
+            );
+        }
+    },
 );
 
 export default {};
