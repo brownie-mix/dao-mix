@@ -115,7 +115,7 @@ def propose(store_value):
     propose_tx.wait(2)  # We wait 2 blocks to include the voting delay
     # This will return the proposal ID, brownie.exceptions.EventLookupError will be 
     # thrown if ProposalCreated event is not emitted.
-    proposal_id = propose_tx.events['ProposalCreated']['proposalId']
+    proposal_id = propose_tx.events['ProposalCreated']['proposalId'] # you could also do `propose_tx.return_value` if your node allows
     print(f"Proposal state {GovernorContract[-1].state(proposal_id)}")
     print(
         f"Proposal snapshot {GovernorContract[-1].proposalSnapshot(proposal_id)}"
