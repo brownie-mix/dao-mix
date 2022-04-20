@@ -113,15 +113,17 @@ def propose(store_value):
         tx = account.transfer(accounts[0], "0 ether")
         tx.wait(1)
     propose_tx.wait(2)  # We wait 2 blocks to include the voting delay
-    # This will return the proposal ID
-    print(f"Proposal state {GovernorContract[-1].state(propose_tx.return_value)}")
+    # This will return the proposal ID, brownie.exceptions.EventLookupError will be 
+    # thrown if ProposalCreated event is not emitted.
+    proposal_id = propose_tx.events['ProposalCreated']['proposalId'] # you could also do `propose_tx.return_value` if your node allows
+    print(f"Proposal state {GovernorContract[-1].state(proposal_id)}")
     print(
-        f"Proposal snapshot {GovernorContract[-1].proposalSnapshot(propose_tx.return_value)}"
+        f"Proposal snapshot {GovernorContract[-1].proposalSnapshot(proposal_id)}"
     )
     print(
-        f"Proposal deadline {GovernorContract[-1].proposalDeadline(propose_tx.return_value)}"
+        f"Proposal deadline {GovernorContract[-1].proposalDeadline(proposal_id)}"
     )
-    return propose_tx.return_value
+    return proposal_id
 
 
 # Can be done through a UI
