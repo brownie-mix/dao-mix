@@ -11,6 +11,7 @@ from brownie import (
     chain,
 )
 from web3 import Web3, constants
+from brownie.network.gas.strategies import GasNowStrategy
 
 # Governor Contract
 QUORUM_PERCENTAGE = 4
@@ -175,7 +176,6 @@ def move_blocks(amount):
     for block in range(amount):
         get_account().transfer(get_account(), "0 ether")
     print(chain.height)
-
 
 def main():
     deploy_governor()

@@ -9,3 +9,10 @@ reports/
 .article.md
 node_modules
 .vscode
+typechain
+artifacts
+
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
