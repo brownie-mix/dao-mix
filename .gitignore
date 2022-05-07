@@ -9,3 +9,11 @@ reports/
 .article.md
 node_modules
 .vscode
+typechain
+artifacts
+
+# exlude vim swap and temp files
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
