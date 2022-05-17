@@ -161,7 +161,10 @@ def queue_and_execute(store_value):
         {"from": account},
     )
     tx.wait(1)
-    time.sleep(1)
+
+    if network.show_active() == 'development':
+        time.sleep(1)
+
     tx = GovernorContract[-1].execute(
         [Box[-1].address],
         [0],
