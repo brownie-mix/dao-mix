@@ -11,6 +11,7 @@ from brownie import (
     chain,
 )
 from web3 import Web3, constants
+import time
 
 # Governor Contract
 QUORUM_PERCENTAGE = 4
@@ -160,6 +161,10 @@ def queue_and_execute(store_value):
         {"from": account},
     )
     tx.wait(1)
+
+    if network.show_active() == 'development':
+        time.sleep(1)
+
     tx = GovernorContract[-1].execute(
         [Box[-1].address],
         [0],
