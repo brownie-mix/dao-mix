@@ -71,9 +71,9 @@ contract GovernorContract is
     }
 
     function propose(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata calldatas,
         string memory description
     ) public override(Governor, IGovernor) returns (uint256) {
         return super.propose(targets, values, calldatas, description);
@@ -81,18 +81,18 @@ contract GovernorContract is
 
     function _execute(
         uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata calldatas,
         bytes32 descriptionHash
     ) internal override(Governor, GovernorTimelockControl) {
         super._execute(proposalId, targets, values, calldatas, descriptionHash);
     }
 
     function _cancel(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata calldatas,
         bytes32 descriptionHash
     ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
