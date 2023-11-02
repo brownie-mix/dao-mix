@@ -9,7 +9,7 @@ contract GovernanceTimeLock is TimelockController {
     // executors is the list of addresses that can execute
     constructor(
         uint256 minDelay,
-        address[] memory proposers,
-        address[] memory executors
+        address[] calldata proposers,
+        address[] calldata executors
     ) TimelockController(minDelay, proposers, executors) {}
 }
